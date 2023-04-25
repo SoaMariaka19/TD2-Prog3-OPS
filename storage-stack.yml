@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2023-04-25'
+Description: TD2
+
+Ressources:
+  MyDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: !Ref DBName
+      AllocatedStorage: !Ref DBAllocatedStorage
+      DBInstanceClass:
+        Ref: DBClass
+      Engine: postgres
+  MyDBInstanceParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Value:
+        Fn::Join:
+          - ''
+          - - jdbc:postgresql://
+            - Fn::GetAtt:
+                - Database
+                - Endpoint.Address
+            - ':'
+            - Fn::GetAtt:
+                - Database
+                - Endpoint.Port
+            - '/'
+            - !Ref DBName
+Outputs:
+  MyDBInstanceParameter:
+    Value: !Ref MyDBInstanceParameter
